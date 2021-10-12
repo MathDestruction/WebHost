@@ -1,160 +1,74 @@
-<!doctype HTML>
-<html>
-
-<head>
-    <meta name="viewport" content="width=device-width, user-scalable=yes, minimum-scale=1.0, maximum-scale=1.0">
-</head>
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-<script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
-
-<body style='margin : 0px; overflow: hidden;'>
-
-    <div style="width: 100%; height: 100%; margin-top: 10px;">
-        <model-viewer 
-        src="Assets/Models/BackToSchool.glb" 
-        id="exposure" exposure="1"
-        skybox-image="Assets/Skybox/small_cathedral_02_1k.hdr" 
-        shadow-intensity ="0.5" 
-        poster="Assets/DisplayImages/BackToSchool.png"
-        shadow-intensity="0.5" 
-        shadow-softness = "0.5" 
-        ar ar-scale="auto" 
-        camera-controls touch-action="auto"
-        ios-src="Assets/Models/BackToSchool.usdz">
-
-            <button slot="ar-button" id="ar-button">
-                Click To View
-            </button>
-
-            <div id="ar-prompt">
-                <img src="Assets/UI/hand.png">
-            </div>
-        </model-viewer>
-
-        <script>
-            (() => {
-                const modelViewer = document.querySelector('#exposure');
-                const time = performance.now();
-
-                let toggle = true;
-                let increment = 0.001;
-
-                let id = null;
-                let start = 0.7;
-                clearInterval(id);
-                id = setInterval(frame, 5);
-
-                function frame() {
-                    if (start == -1) {
-                        clearInterval(id);
-                    } else {
-                        start = start - increment;
-                        modelViewer.exposure = start;
-                        if (start < 0.1 || start > 0.8)
-                        {
-                            increment = increment * -1;
-                        }                        
-                    }
-                    console.log(start)
-                }
-
-                
-
-
-            })();
-        </script>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | WebAR-CarController</title>
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+  </head>
+  <body>
+    <div id="unity-container">
+      <div id="unity-canvas-container" style="width: 100%; height: 100%;">
+        <canvas id="unity-canvas" style="width: 100%; height: 100%;"></canvas>
+      </div>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-footer">
+        <div id="unity-webxr-link">By <a href="https://allinreality.com" target="_blank" title="AllinReality">AllinReality</a></div>
+      </div>
     </div>
+    <script>
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/Unity WebAR - Initial Test.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/Unity WebAR - Initial Test.data.gz",
+        frameworkUrl: buildUrl + "/Unity WebAR - Initial Test.framework.js.gz",
+        codeUrl: buildUrl + "/Unity WebAR - Initial Test.wasm.gz",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "WebAR-CarController",
+        productVersion: "0.1",
+      };
 
-    <style>
-        /* This keeps child nodes hidden while the element loads */
-        :not(:defined)>* {
-            display: none;
-        }
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var canvasContainer = document.querySelector("#unity-canvas-container");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      var unityInstance = null;
+      
 
-        model-viewer {
-            background-color: #eee;
-            --poster-color: #eee;
-            width: 100%;
-            height: 100%;
-        }
+      loadingBar.style.display = "block";
 
-        #ar-button {
-            background-image: url(Assets/UI/ic_modelviewer.png);
-            background-repeat: no-repeat;
-            background-size: 20px 20px;
-            background-position: 12px 50%;
-            background-color: #fff;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 132px;
-            padding: 0px 16px 0px 40px;
-            font-family: Roboto Regular, Helvetica Neue, sans-serif;
-            font-size: 14px;
-            color: #4285f4;
-            height: 36px;
-            line-height: 36px;
-            border-radius: 18px;
-            border: 1px solid #DADCE0;
-        }
-
-        #ar-button:active {
-            background-color: #E8EAED;
-        }
-
-        #ar-button:focus {
-            outline: none;
-        }
-
-        #ar-button:focus-visible {
-            outline: 1px solid #4285f4;
-        }
-
-        @keyframes circle {
-            from {
-                transform: translateX(-50%) rotate(0deg) translateX(50px) rotate(0deg);
-            }
-
-            to {
-                transform: translateX(-50%) rotate(360deg) translateX(50px) rotate(-360deg);
-            }
-        }
-
-        @keyframes elongate {
-            from {
-                transform: translateX(100px);
-            }
-
-            to {
-                transform: translateX(-100px);
-            }
-        }
-
-        model-viewer>#ar-prompt {
-            position: absolute;
-            left: 50%;
-            bottom: 175px;
-            animation: elongate 2s infinite ease-in-out alternate;
-            display: none;
-        }
-
-        model-viewer[ar-status="session-started"]>#ar-prompt {
-            display: block;
-        }
-
-        model-viewer>#ar-prompt>img {
-            animation: circle 4s linear infinite;
-        }
-
-        html,
-        body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-        }
-    </style>
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((instance) => {
+          unityInstance = instance;
+          loadingBar.style.display = "none";
+          if (fullscreenButton)
+          {
+            fullscreenButton.onclick = () => {
+              unityInstance.SetFullscreen(1);
+            };
+          }
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+      document.body.appendChild(script);
 
 
-</body>
-
+    </script>
+  </body>
 </html>
